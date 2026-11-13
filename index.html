@@ -99,7 +99,7 @@ h1 span{display:block}
 .sheet dd{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 
 .transport{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px 14px;align-items:center}
-#play{width:50px;height:50px;border-radius:50%;border:0;background:var(--oxide);color:var(--oxide-ink);font-size:1.1rem;cursor:pointer;display:grid;place-items:center}
+#play{min-width:104px;height:50px;padding:0 18px;border-radius:25px;border:0;font-family:var(--display);font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;background:var(--oxide);color:var(--oxide-ink);font-size:1.1rem;cursor:pointer;display:grid;place-items:center}
 input[type=range]{width:100%;accent-color:var(--oxide);height:30px;margin:0}
 .seg{display:flex;gap:2px;padding:2px;border:1px solid var(--line);border-radius:5px}
 .chips{grid-column:1/-1;list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -145,6 +145,7 @@ sup a{text-decoration:none;padding:0 1px}
 .photos figcaption{font-size:.86rem;color:var(--muted);margin-top:6px;line-height:1.35}
 .by{margin:0;color:var(--muted);font-size:.95rem}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media (max-width:640px){.transport{grid-template-columns:auto minmax(0,1fr)}.transport .seg{justify-self:end}.transport #t{grid-column:1/-1;grid-row:2}}
 </style>
 
 </head>
@@ -191,7 +192,7 @@ sup a{text-decoration:none;padding:0 1px}
   </aside>
 
   <div class="transport">
-    <button id="play" aria-label="Run the job">▶</button>
+    <button id="play" aria-label="Run the job">▶ Play</button>
     <input type="range" id="t" min="0" max="8" step="0.0005" value="0" aria-label="Job progress">
     <div class="seg" role="group" aria-label="Speed">
       <button data-sp="1" aria-pressed="false">1×</button>
@@ -206,8 +207,8 @@ sup a{text-decoration:none;padding:0 1px}
     <p class="hint">At 1× one pick runs about four seconds. Drag to look around, pinch or scroll to zoom. In the two standing views, zoom changes how wide you see.</p>
     <ul class="legend" aria-label="Model colors">
       <li><span class="sw" style="background:var(--steel)"></span>Stainless sections</li>
-      <li><span class="sw" style="background:var(--oxide)"></span>Temporary steel: track, truss, harness, jacks</li>
-      <li><span class="sw" style="background:var(--rig)"></span>Derricks and cranes</li>
+      <li><span class="sw" style="background:var(--oxide)"></span>Temporary steel and the creeper derricks</li>
+      <li><span class="sw" style="background:var(--rig)"></span>Crawler cranes</li>
       <li><span class="sw" style="background:#F1EEE4;box-shadow:0 0 0 1px var(--line)"></span>The gang, drawn 6 ft tall</li>
     </ul>
   </div>
@@ -390,8 +391,8 @@ const stepLis=[...stepsEl.children];
 let t=0, playing=false, speed=4;
 const range=$('t'), playBtn=$('play');
 function setT(v){t=clamp(v,0,8);range.value=t;}
-function stopPlay(){playing=false;playBtn.textContent='▶';playBtn.setAttribute('aria-label','Run the job');}
-function startPlay(){if(t>=7.999)setT(0);playing=true;playBtn.textContent='❚❚';playBtn.setAttribute('aria-label','Hold the job');}
+function stopPlay(){playing=false;playBtn.textContent='▶ Play';playBtn.setAttribute('aria-label','Run the job');}
+function startPlay(){if(t>=7.999)setT(0);playing=true;playBtn.textContent='❚❚ Pause';playBtn.setAttribute('aria-label','Hold the job');}
 function setSpeed(v){speed=v;document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.sp===v)));}
 document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>setSpeed(+b.dataset.sp)));
 range.addEventListener('input',()=>{stopPlay();t=parseFloat(range.value);});
@@ -1030,6 +1031,7 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 setView('job'); setT(START_T);
+if(!reduce.matches) startPlay();   /* run the job on load; the button pauses it */
 requestAnimationFrame(loop);
 })();
 </script>
