@@ -1031,7 +1031,7 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 setView('job'); setT(START_T);
-if(!reduce.matches) startPlay();   /* run the job on load; the button pauses it */
+if(!reduce.matches){ startPlay(); setOrbit(true); }   /* run the job and a slow orbit on load; the buttons stop them, and so does dragging the model */
 requestAnimationFrame(loop);
 })();
 </script>
